@@ -1,0 +1,50 @@
+#!perl
+
+# DATE
+# VERSION
+
+use 5.010001;
+use strict;
+use warnings;
+
+use Perinci::CmdLine::sero;
+
+my $prefix = '/App/sero/';
+
+Perinci::CmdLine::sero->new(
+    url => $prefix,
+    log => 1,
+    pass_cmdline_object => 1,
+    config_filename => ["sero.conf"],
+    subcommands => {
+        #'ls-stocks'     => { url=>"${prefix}list_stocks" },
+        'daily-price'  => { url=>"${prefix}list_daily_prices" },
+        'return'       => { url=>"${prefix}calc_returns" },
+        'daily-return' => { url=>"${prefix}calc_daily_returns" },
+    },
+)->run;
+
+# ABSTRACT:
+# PODNAME:
+
+=head1 SYNOPSIS
+
+In F<~/.config/sero.conf>:
+
+ ...
+
+To list stocks:
+
+ % sero XXX
+
+To list prices for a stock:
+
+ % sero BBCA
+
+For other subcommands, use C<sero --help> or see the documentation.
+
+
+=head1 DESCRIPTION
+
+
+=head1 SEE ALSO
