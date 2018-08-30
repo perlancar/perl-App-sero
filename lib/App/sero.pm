@@ -42,6 +42,7 @@ our %args_db = (
 our $db_schema_spec = {
     latest_v => 1,
     install => [
+
         'CREATE TABLE exchange (
              id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
              code VARCHAR(8) NOT NULL, UNIQUE(code),
@@ -49,6 +50,22 @@ our $db_schema_spec = {
              local_name VARCHAR(255) NOT NULL,
              country_code CHAR(2) NOT NULL
          )',
+
+        # list of securities (or indexes)
+        # XXX publisher?
+        # XXX start_date?
+        q(CREATE TABLE security (
+             id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+             code VARCHAR(8) NOT NULL, UNIQUE(code),
+             currency VARCHAR(3) NOT NULL,
+             type VARCHAR(32) NOT NULL, -- e.g. INDEX, STOCK, MF (mutual fund),
+             local_name VARCHAR(255) NOT NULL,
+             country_code CHAR(2) NOT NULL
+         )),
+
+        # XXX mutual fund-specific information, e.g. starting unit, type of
+        # mutual fund (mixed, equity, fixed income, etc), fees, etc.
+
         "CREATE TABLE daily_price (
              id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
              exchange_id INT NOT NULL,
@@ -64,6 +81,7 @@ our $db_schema_spec = {
              volume DECIMAL(18,4),
              note VARCHAR(255)
          ) ENGINE='MyISAM'",
+
         # XXX spot_price
     ],
 };
