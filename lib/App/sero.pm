@@ -15,6 +15,8 @@ $SPEC{':package'} = {
     v => 1.1,
 };
 
+our %sch_date = ['date*', 'x.perl.coerce_to' => 'DateTime'];
+
 our %args_common = (
     default_exchange => {
         schema => 'str*',
@@ -39,13 +41,37 @@ our %args_db = (
     },
 );
 
+our %args_filter_stocks = (
+    stocks => {
+        'x.name.is_plural' => 1,
+        'x.name.singular' => 'stock',
+        schema => ['array*', of=>'str*', 'x.perl.coerce_rules'=>['str_comma_sep']],
+        tags => ['category:filtering'],
+    },
+);
+
+our %args_filter_date = (
+    date_start => {
+        schema => ['date*', 'x.perl.coerce_to' => 'DateTime'],
+        tags => ['category:filtering'],
+        req => 1,
+        pos => 0,
+    },
+    date_end => {
+        schema => ['date*', 'x.perl.coerce_to' => 'DateTime'],
+        tags => ['category:filtering'],
+        req => 1,
+        pos => 1,
+    },
+);
+
 our $db_schema_spec = {
     latest_v => 1,
     install => [
 
         'CREATE TABLE exchange (
              id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-             code VARCHAR(8) NOT NULL, UNIQUE(code),
+             code VARCHAR(32) NOT NULL, UNIQUE(code),
              en_name VARCHAR(255) NOT NULL,
              local_name VARCHAR(255) NOT NULL,
              country_code CHAR(2) NOT NULL
@@ -56,8 +82,8 @@ our $db_schema_spec = {
         # XXX start_date?
         q(CREATE TABLE security (
              id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-             code VARCHAR(8) NOT NULL, UNIQUE(code),
-             currency VARCHAR(3) NOT NULL,
+             code VARCHAR(32) NOT NULL, UNIQUE(code),
+             currency VARCHAR(3) NOT NULL, -- '' for index
              type VARCHAR(32) NOT NULL, -- e.g. INDEX, STOCK, MF (mutual fund),
              local_name VARCHAR(255) NOT NULL,
              country_code CHAR(2) NOT NULL
@@ -118,20 +144,8 @@ $SPEC{list_daily_prices} = {
     args => {
         %args_common,
         %args_db,
-        stocks => {
-            'x.name.is_plural' => 1,
-            'x.name.singular' => 'stock',
-            schema => ['array*', of=>'str*', 'x.perl.coerce_rules'=>['str_comma_sep']],
-            tags => ['category:filtering'],
-        },
-        date_start => {
-            schema => ['date*', 'x.perl.coerce_to' => 'DateTime'],
-            tags => ['category:filtering'],
-        },
-        date_end => {
-            schema => ['date*', 'x.perl.coerce_to' => 'DateTime'],
-            tags => ['category:filtering'],
-        },
+        %args_filter_stocks,
+        %args_filter_date,
     },
 };
 sub list_daily_prices {
@@ -151,24 +165,8 @@ $SPEC{calc_returns} = {
     args => {
         %args_common,
         %args_db,
-        stocks => {
-            'x.name.is_plural' => 1,
-            'x.name.singular' => 'stock',
-            schema => ['array*', of=>'str*', 'x.perl.coerce_rules'=>['str_comma_sep']],
-            tags => ['category:filtering'],
-        },
-        date_start => {
-            schema => ['date*', 'x.perl.coerce_to' => 'DateTime'],
-            tags => ['category:filtering'],
-            req => 1,
-            pos => 0,
-        },
-        date_end => {
-            schema => ['date*', 'x.perl.coerce_to' => 'DateTime'],
-            tags => ['category:filtering'],
-            req => 1,
-            pos => 1,
-        },
+        %args_filter_stocks,
+        %args_filter_date,
     },
 };
 sub calc_returns {
