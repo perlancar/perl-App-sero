@@ -15,7 +15,7 @@ $SPEC{':package'} = {
     v => 1.1,
 };
 
-our %sch_date = ['date*', 'x.perl.coerce_to' => 'DateTime'];
+our $sch_date = ['date*', 'x.perl.coerce_to' => 'DateTime'];
 
 our %args_common = (
     default_exchange => {
@@ -62,6 +62,13 @@ our %args_filter_date = (
         tags => ['category:filtering'],
         req => 1,
         pos => 1,
+    },
+);
+
+our %argo_detail = (
+    detail => {
+        schema => ['bool*', is=>1],
+        cmdline_aliases => {l=>{}},
     },
 );
 
@@ -138,6 +145,43 @@ sub _init {
     [200];
 }
 
+$SPEC{list_markets} = {
+    v => 1.1,
+    summary => 'List supported stock exchanges',
+    args => {
+        %args_common,
+        %args_db,
+        %argo_detail,
+    },
+};
+sub list_markets {
+    require Finance::SE::Catalog;
+    require PERLANCAR::Module::List;
+
+    my %args = @_;
+
+    my $r = $args{-cmdline_r};
+    _init($r);
+
+    my $cat = Finance::SE::Catalog->new;
+    my $mods = PERLANCAR::Module::List::list_modules(
+        "App::sero::Exchange::", {list_modules=>1});
+    my @rows;
+    for my $mod (sort keys %$mods) {
+        (my $code = $mod) =~ s/\AApp::sero::Exchange:://;
+        my $row;
+        eval { $row = $cat->by_code($code) };
+        next if $@;
+        push @rows, $row;
+    }
+
+    unless ($args{detail}) {
+        @rows = map { $_->{code} } @rows;
+    }
+
+    [200, "OK", \@rows];
+}
+
 $SPEC{list_daily_prices} = {
     v => 1.1,
     summary => 'List daily stock prices',
@@ -174,8 +218,6 @@ sub calc_returns {
 
     my $r = $args{-cmdline_r};
     _init($r);
-
-    if (
 
     [200];
 }

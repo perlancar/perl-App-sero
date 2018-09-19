@@ -31,7 +31,7 @@ Must return metadata hash, e.g.
 
  {
      code => "IDX",
-     en_name => "Indonesian Stock Exchange",
+     eng_name => "Indonesian Stock Exchange",
      local_name => "Bursa Efek Indonesia",
      country_code => "ID",
  }

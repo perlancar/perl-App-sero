@@ -17,7 +17,8 @@ Perinci::CmdLine::sero->new(
     pass_cmdline_object => 1,
     config_filename => ["sero.conf"],
     subcommands => {
-        #'ls-stocks'     => { url=>"${prefix}list_stocks" },
+        'markets'     => { url=>"${prefix}list_markets" },
+        #'stocks'     => { url=>"${prefix}list_stocks" },
         'daily-price'  => { url=>"${prefix}list_daily_prices" },
         'return'       => { url=>"${prefix}calc_returns" },
         'daily-return' => { url=>"${prefix}calc_daily_returns" },
