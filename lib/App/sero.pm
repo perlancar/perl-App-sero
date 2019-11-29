@@ -1,6 +1,8 @@
 package App::sero;
 
+# AUTHOR
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -45,7 +47,7 @@ our %args_filter_stocks = (
     stocks => {
         'x.name.is_plural' => 1,
         'x.name.singular' => 'stock',
-        schema => ['array*', of=>'str*', 'x.perl.coerce_rules'=>['str_comma_sep']],
+        schema => ['array*', of=>'str*', 'x.perl.coerce_rules'=>['From_str::comma_sep']],
         tags => ['category:filtering'],
     },
 );
